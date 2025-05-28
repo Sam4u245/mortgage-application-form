@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Application Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS for finer control and overrides */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for longer forms */
+            min-height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        /* Tailwind classes handle most styling, but some specifics for elements */
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            /* Ensure full width minus padding for consistency */
+            width: calc(100% - 2rem); /* 100% minus 1rem padding on each side */
+            padding: 0.75rem;
+            border: 1px solid #d1d5db; /* Light gray border */
+            border-radius: 0.5rem; /* Rounded corners */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            font-size: 1rem;
+            color: #374151; /* Darker text color */
+        }
+
+        textarea {
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 5rem;
+        }
+
+        /* Custom arrow for section headers */
+        .arrow {
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            display: inline-block;
+            padding: 3px;
+            transition: transform 0.3s ease-in-out; /* Smooth transition for arrow rotation */
+        }
+        .arrow.down {
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+        }
+        .arrow.up {
+            transform: rotate(-135deg);
+            -webkit-transform: rotate(-135deg);
+        }
+
+        /* Styles for radio button groups to ensure proper spacing */
+        .radio-group label {
+            margin-right: 1rem;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 0.5rem;
+            width: auto; /* Override default input width for radio buttons */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="form-container bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
+        <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Mortgage Application Form</h2>
+        <form id="multiSectionForm">
+
+            <div class="section mb-6" id="applicant1BasicInfoSection">
+                <div class="section-header bg-blue-600 text-white p-4 rounded-lg cursor-pointer flex justify-between items-center font-semibold text-lg hover:bg-blue-700 transition duration-300" onclick="toggleSection('applicant1BasicInfoSection')">
+                    Applicant 1: Basic Information <span class="arrow down" id="arrow_applicant1BasicInfoSection"></span>
+                </div>
+                <div class="section-content border border-gray-200 p-6 rounded-lg mt-4 hidden">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Primary Applicant Details</h3>
+                    <div class="form-group mb-4">
+                        <label for="applicant1_fullName" class="block text-gray-700 text-sm font-medium mb-2">Full Name:</label>
+                        <input type="text" id="applicant1_fullName" name="applicant1_fullName" required placeholder="John Doe" class="focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="applicant1_email" class="block text-gray-700 text-sm font-medium mb-2">Email:</label>
+                        <input type="email" id="applicant1_email" name="applicant1_email" required placeholder="john.doe@example.com" class="focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="applicant1_phone" class="block text-gray-700 text-sm font-medium mb-2">Phone Number:</label>
+                        <input type="tel" id="applicant1_phone" name="applicant1_phone" placeholder="+61 4XX XXX XXX" class="focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="applicant1_dob" class="block text-gray-700 text-sm font-medium mb-2">Date of Birth:</label>
+                        <input type="date" id="applicant1_dob" name="applicant1_dob" class="focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="applicant1_address" class="block text-gray-700 text-sm font-medium mb-2">Current Address:</label>
+                        <textarea id="applicant1_address" name="applicant1_address" placeholder="123 Main St, Suburb, State 1234" class="focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="applicant1_maritalStatus" class="block text-gray-700 text-sm font-medium mb-2">Marital Status:</label>
+                        <select id="applicant1_maritalStatus" name="applicant1_maritalStatus" class="focus:ring-blue-500 focus:border-blue-500" onchange="handleMaritalStatusChange('applicant1_maritalStatus', 'applicant2InfoContainer')">
+                            <option value="">Select...</option>
+                            <option value="single">Single</option>
+                            <option value="married">Married</option>
+                            <option value="de_facto">De Facto</option>
+                            <option value="divorced">Divorced</option>
+                            <option value="widowed">Widowed</option>
+                        </select>
+                    </div>
+
+                    <div id="applicant2InfoContainer" class="hidden border border-dashed border-gray-300 p-6 rounded-lg mt-6 bg-gray-50">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Second Applicant Details (Joint Application)</h3>
+                        <div class="form-group mb-4">
+                            <label for="applicant2_fullName" class="block text-gray-700 text-sm font-medium mb-2">Full Name:</label>
+                            <input type="text" id="applicant2_fullName" name="applicant2_fullName" placeholder="Jane Doe" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant2_email" class="block text-gray-700 text-sm font-medium mb-2">Email:</label>
+                            <input type="email" id="applicant2_email" name="applicant2_email" placeholder="jane.doe@example.com" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant2_phone" class="block text-gray-700 text-sm font-medium mb-2">Phone Number:</label>
+                            <input type="tel" id="applicant2_phone" name="applicant2_phone" placeholder="+61 4XX XXX XXX" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant2_dob" class="block text-gray-700 text-sm font-medium mb-2">Date of Birth:</label>
+                            <input type="date" id="applicant2_dob" name="applicant2_dob" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant2_address" class="block text-gray-700 text-sm font-medium mb-2">Current Address:</label>
+                            <textarea id="applicant2_address" name="applicant2_address" placeholder="123 Main St, Suburb, State 1234" class="focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-600 mb-3 mt-6">Employment Information (Applicant 2)</h4>
+                        <div class="form-group mb-4">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Employment Type:</label>
+                            <div class="radio-group flex space-x-4">
+                                <label>
+                                    <input type="radio" name="applicant2_employmentType" value="PAYG" onchange="handleEmploymentTypeChange('applicant2_employmentType', 'applicant2_paygDetails', 'applicant2_abnDetails')"> PAYG
+                                </label>
+                                <label>
+                                    <input type="radio" name="applicant2_employmentType" value="ABN" onchange="handleEmploymentTypeChange('applicant2_employmentType', 'applicant2_paygDetails', 'applicant2_abnDetails')"> ABN
+                                </label>
+                            </div>
+                        </div>
+                        <div id="applicant2_paygDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                            <div class="form-group mb-4">
+                                <label for="applicant2_payg_employer" class="block text-gray-700 text-sm font-medium mb-2">Current Employer:</label>
+                                <input type="text" id="applicant2_payg_employer" name="applicant2_payg_employer" placeholder="Company Name" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_payg_occupation" class="block text-gray-700 text-sm font-medium mb-2">Occupation/Job Title:</label>
+                                <input type="text" id="applicant2_payg_occupation" name="applicant2_payg_occupation" placeholder="Manager" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_payg_annualIncome" class="block text-gray-700 text-sm font-medium mb-2">Gross Annual Income ($AUD):</label>
+                                <input type="number" id="applicant2_payg_annualIncome" name="applicant2_payg_annualIncome" min="0" step="0.01" placeholder="70000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_payg_startDate" class="block text-gray-700 text-sm font-medium mb-2">Employment Start Date:</label>
+                                <input type="date" id="applicant2_payg_startDate" name="applicant2_payg_startDate" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                        <div id="applicant2_abnDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                            <div class="form-group mb-4">
+                                <label for="applicant2_abn_businessName" class="block text-gray-700 text-sm font-medium mb-2">Business Name:</label>
+                                <input type="text" id="applicant2_abn_businessName" name="applicant2_abn_businessName" placeholder="Doe Consulting" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_abn" class="block text-gray-700 text-sm font-medium mb-2">ABN:</label>
+                                <input type="text" id="applicant2_abn" name="applicant2_abn" placeholder="12 345 678 901" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_abn_businessType" class="block text-gray-700 text-sm font-medium mb-2">Business Type:</label>
+                                <input type="text" id="applicant2_abn_businessType" name="applicant2_abn_businessType" placeholder="Sole Trader / Pty Ltd" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_abn_annualIncome" class="block text-gray-700 text-sm font-medium mb-2">Annual Business Income ($AUD):</label>
+                                <input type="number" id="applicant2_abn_annualIncome" name="applicant2_abn_annualIncome" min="0" step="0.01" placeholder="120000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_abn_startDate" class="block text-gray-700 text-sm font-medium mb-2">Business Start Date:</label>
+                                <input type="date" id="applicant2_abn_startDate" name="applicant2_abn_startDate" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <h4 class="text-lg font-semibold text-gray-600 mb-3 mt-6">Financial Information (Applicant 2)</h4>
+                        <div class="form-group mb-4">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Do you have a Credit Card?</label>
+                            <div class="radio-group flex space-x-4">
+                                <label>
+                                    <input type="radio" name="applicant2_hasCreditCard" value="yes" onchange="toggleFinancialDetails('applicant2_creditCardDetails', true)"> Yes
+                                </label>
+                                <label>
+                                    <input type="radio" name="applicant2_hasCreditCard" value="no" onchange="toggleFinancialDetails('applicant2_creditCardDetails', false)"> No
+                                </label>
+                            </div>
+                        </div>
+                        <div id="applicant2_creditCardDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                            <div class="form-group mb-4">
+                                <label for="applicant2_creditCardBank" class="block text-gray-700 text-sm font-medium mb-2">Current Bank/Lender:</label>
+                                <input type="text" id="applicant2_creditCardBank" name="applicant2_creditCardBank" placeholder="NAB" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_creditCardLimit" class="block text-gray-700 text-sm font-medium mb-2">Total Limit/Balance ($AUD):</label>
+                                <input type="number" id="applicant2_creditCardLimit" name="applicant2_creditCardLimit" min="0" step="0.01" placeholder="5000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Do you have a Home Loan?</label>
+                            <div class="radio-group flex space-x-4">
+                                <label>
+                                    <input type="radio" name="applicant2_hasHomeLoan" value="yes" onchange="toggleFinancialDetails('applicant2_homeLoanDetails', true)"> Yes
+                                </label>
+                                <label>
+                                    <input type="radio" name="applicant2_hasHomeLoan" value="no" onchange="toggleFinancialDetails('applicant2_homeLoanDetails', false)"> No
+                                </label>
+                            </div>
+                        </div>
+                        <div id="applicant2_homeLoanDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                            <div class="form-group mb-4">
+                                <label for="applicant2_homeLoanBank" class="block text-gray-700 text-sm font-medium mb-2">Current Bank/Lender:</label>
+                                <input type="text" id="applicant2_homeLoanBank" name="applicant2_homeLoanBank" placeholder="Commonwealth Bank" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_homeLoanBalance" class="block text-gray-700 text-sm font-medium mb-2">Current Balance ($AUD):</label>
+                                <input type="number" id="applicant2_homeLoanBalance" name="applicant2_homeLoanBalance" min="0" step="0.01" placeholder="350000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Do you have a Personal Loan?</label>
+                            <div class="radio-group flex space-x-4">
+                                <label>
+                                    <input type="radio" name="applicant2_hasPersonalLoan" value="yes" onchange="toggleFinancialDetails('applicant2_personalLoanDetails', true)"> Yes
+                                </label>
+                                <label>
+                                    <input type="radio" name="applicant2_hasPersonalLoan" value="no" onchange="toggleFinancialDetails('applicant2_personalLoanDetails', false)"> No
+                                </label>
+                            </div>
+                        </div>
+                        <div id="applicant2_personalLoanDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                            <div class="form-group mb-4">
+                                <label for="applicant2_personalLoanBank" class="block text-gray-700 text-sm font-medium mb-2">Current Bank/Lender:</label>
+                                <input type="text" id="applicant2_personalLoanBank" name="applicant2_personalLoanBank" placeholder="ANZ" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="applicant2_personalLoanBalance" class="block text-gray-700 text-sm font-medium mb-2">Current Balance ($AUD):</label>
+                                <input type="number" id="applicant2_personalLoanBalance" name="applicant2_personalLoanBalance" min="0" step="0.01" placeholder="15000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div> <div class="form-actions flex justify-end mt-6">
+                        <button type="button" class="next-btn bg-green-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300" onclick="nextSection('applicant1BasicInfoSection')">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section mb-6" id="applicant1EmploymentInfoSection">
+                <div class="section-header bg-blue-600 text-white p-4 rounded-lg cursor-pointer flex justify-between items-center font-semibold text-lg hover:bg-blue-700 transition duration-300" onclick="toggleSection('applicant1EmploymentInfoSection')">
+                    Applicant 1: Employment Information <span class="arrow down" id="arrow_applicant1EmploymentInfoSection"></span>
+                </div>
+                <div class="section-content border border-gray-200 p-6 rounded-lg mt-4 hidden">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Primary Applicant Employment</h3>
+                    <div class="form-group mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Employment Type:</label>
+                        <div class="radio-group flex space-x-4">
+                            <label>
+                                <input type="radio" name="applicant1_employmentType" value="PAYG" onchange="handleEmploymentTypeChange('applicant1_employmentType', 'applicant1_paygDetails', 'applicant1_abnDetails')"> PAYG
+                            </label>
+                            <label>
+                                <input type="radio" name="applicant1_employmentType" value="ABN" onchange="handleEmploymentTypeChange('applicant1_employmentType', 'applicant1_paygDetails', 'applicant1_abnDetails')"> ABN
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="applicant1_paygDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                        <h4 class="text-lg font-semibold text-gray-600 mb-3">PAYG Details</h4>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_payg_employer" class="block text-gray-700 text-sm font-medium mb-2">Current Employer:</label>
+                            <input type="text" id="applicant1_payg_employer" name="applicant1_payg_employer" placeholder="Company Name" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_payg_occupation" class="block text-gray-700 text-sm font-medium mb-2">Occupation/Job Title:</label>
+                            <input type="text" id="applicant1_payg_occupation" name="applicant1_payg_occupation" placeholder="Software Engineer" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_payg_annualIncome" class="block text-gray-700 text-sm font-medium mb-2">Gross Annual Income ($AUD):</label>
+                            <input type="number" id="applicant1_payg_annualIncome" name="applicant1_payg_annualIncome" min="0" step="0.01" placeholder="85000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_payg_startDate" class="block text-gray-700 text-sm font-medium mb-2">Employment Start Date:</label>
+                            <input type="date" id="applicant1_payg_startDate" name="applicant1_payg_startDate" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div id="applicant1_abnDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                        <h4 class="text-lg font-semibold text-gray-600 mb-3">ABN Details</h4>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_abn_businessName" class="block text-gray-700 text-sm font-medium mb-2">Business Name:</label>
+                            <input type="text" id="applicant1_abn_businessName" name="applicant1_abn_businessName" placeholder="Doe Consulting" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_abn" class="block text-gray-700 text-sm font-medium mb-2">ABN:</label>
+                            <input type="text" id="applicant1_abn" name="applicant1_abn" placeholder="12 345 678 901" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_abn_businessType" class="block text-gray-700 text-sm font-medium mb-2">Business Type:</label>
+                            <input type="text" id="applicant1_abn_businessType" name="applicant1_abn_businessType" placeholder="Sole Trader / Pty Ltd" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_abn_annualIncome" class="block text-gray-700 text-sm font-medium mb-2">Annual Business Income ($AUD):</label>
+                            <input type="number" id="applicant1_abn_annualIncome" name="applicant1_abn_annualIncome" min="0" step="0.01" placeholder="150000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_abn_startDate" class="block text-gray-700 text-sm font-medium mb-2">Business Start Date:</label>
+                            <input type="date" id="applicant1_abn_startDate" name="applicant1_abn_startDate" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="form-actions flex justify-between mt-6">
+                        <button type="button" class="prev-btn bg-gray-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-700 transition duration-300" onclick="prevSection('applicant1EmploymentInfoSection')">Previous</button>
+                        <button type="button" class="next-btn bg-green-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300" onclick="nextSection('applicant1EmploymentInfoSection')">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section mb-6" id="applicant1FinancialInfoSection">
+                <div class="section-header bg-blue-600 text-white p-4 rounded-lg cursor-pointer flex justify-between items-center font-semibold text-lg hover:bg-blue-700 transition duration-300" onclick="toggleSection('applicant1FinancialInfoSection')">
+                    Applicant 1: Financial Information <span class="arrow down" id="arrow_applicant1FinancialInfoSection"></span>
+                </div>
+                <div class="section-content border border-gray-200 p-6 rounded-lg mt-4 hidden">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Primary Applicant Financials</h3>
+                    <div class="form-group mb-4">
+                        <label for="applicant1_monthlyExpenses" class="block text-gray-700 text-sm font-medium mb-2">Estimated Monthly Expenses ($AUD):</label>
+                        <input type="number" id="applicant1_monthlyExpenses" name="applicant1_monthlyExpenses" min="0" step="0.01" placeholder="2500.00" class="focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Do you have a Credit Card?</label>
+                        <div class="radio-group flex space-x-4">
+                            <label>
+                                <input type="radio" name="applicant1_hasCreditCard" value="yes" onchange="toggleFinancialDetails('applicant1_creditCardDetails', true)"> Yes
+                            </label>
+                            <label>
+                                <input type="radio" name="applicant1_hasCreditCard" value="no" onchange="toggleFinancialDetails('applicant1_creditCardDetails', false)"> No
+                            </label>
+                        </div>
+                    </div>
+                    <div id="applicant1_creditCardDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                        <div class="form-group mb-4">
+                            <label for="applicant1_creditCardBank" class="block text-gray-700 text-sm font-medium mb-2">Current Bank/Lender:</label>
+                            <input type="text" id="applicant1_creditCardBank" name="applicant1_creditCardBank" placeholder="NAB" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_creditCardLimit" class="block text-gray-700 text-sm font-medium mb-2">Total Limit/Balance ($AUD):</label>
+                            <input type="number" id="applicant1_creditCardLimit" name="applicant1_creditCardLimit" min="0" step="0.01" placeholder="10000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Do you have a Home Loan?</label>
+                        <div class="radio-group flex space-x-4">
+                            <label>
+                                <input type="radio" name="applicant1_hasHomeLoan" value="yes" onchange="toggleFinancialDetails('applicant1_homeLoanDetails', true)"> Yes
+                            </label>
+                            <label>
+                                <input type="radio" name="applicant1_hasHomeLoan" value="no" onchange="toggleFinancialDetails('applicant1_homeLoanDetails', false)"> No
+                            </label>
+                        </div>
+                    </div>
+                    <div id="applicant1_homeLoanDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                        <div class="form-group mb-4">
+                            <label for="applicant1_homeLoanBank" class="block text-gray-700 text-sm font-medium mb-2">Current Bank/Lender:</label>
+                            <input type="text" id="applicant1_homeLoanBank" name="applicant1_homeLoanBank" placeholder="Westpac" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_homeLoanBalance" class="block text-gray-700 text-sm font-medium mb-2">Current Balance ($AUD):</label>
+                            <input type="number" id="applicant1_homeLoanBalance" name="applicant1_homeLoanBalance" min="0" step="0.01" placeholder="400000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Do you have a Personal Loan?</label>
+                        <div class="radio-group flex space-x-4">
+                            <label>
+                                <input type="radio" name="applicant1_hasPersonalLoan" value="yes" onchange="toggleFinancialDetails('applicant1_personalLoanDetails', true)"> Yes
+                            </label>
+                            <label>
+                                <input type="radio" name="applicant1_hasPersonalLoan" value="no" onchange="toggleFinancialDetails('applicant1_personalLoanDetails', false)"> No
+                            </label>
+                        </div>
+                    </div>
+                    <div id="applicant1_personalLoanDetails" class="hidden border border-gray-200 p-4 rounded-md bg-white mb-4">
+                        <div class="form-group mb-4">
+                            <label for="applicant1_personalLoanBank" class="block text-gray-700 text-sm font-medium mb-2">Current Bank/Lender:</label>
+                            <input type="text" id="applicant1_personalLoanBank" name="applicant1_personalLoanBank" placeholder="ANZ" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="applicant1_personalLoanBalance" class="block text-gray-700 text-sm font-medium mb-2">Current Balance ($AUD):</label>
+                            <input type="number" id="applicant1_personalLoanBalance" name="applicant1_personalLoanBalance" min="0" step="0.01" placeholder="20000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="form-actions flex justify-between mt-6">
+                        <button type="button" class="prev-btn bg-gray-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-700 transition duration-300" onclick="prevSection('applicant1FinancialInfoSection')">Previous</button>
+                        <button type="button" class="next-btn bg-green-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300" onclick="nextSection('applicant1FinancialInfoSection')">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section mb-6" id="nextGoalSection">
+                <div class="section-header bg-blue-600 text-white p-4 rounded-lg cursor-pointer flex justify-between items-center font-semibold text-lg hover:bg-blue-700 transition duration-300" onclick="toggleSection('nextGoalSection')">
+                    Your Next Goal <span class="arrow down" id="arrow_nextGoalSection"></span>
+                </div>
+                <div class="section-content border border-gray-200 p-6 rounded-lg mt-4 hidden">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">What's Your Next Financial Goal?</h3>
+                    <div class="form-group mb-4">
+                        <label for="goalDescription" class="block text-gray-700 text-sm font-medium mb-2">Describe your next major goal:</label>
+                        <textarea id="goalDescription" name="goalDescription" placeholder="e.g., Buy a house, save for retirement, start a business" class="focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="goalTimeline" class="block text-gray-700 text-sm font-medium mb-2">Target Timeline for this Goal:</label>
+                        <input type="text" id="goalTimeline" name="goalTimeline" placeholder="e.g., 2 years, 5 years, by 2030" class="focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="goalFinancialImpact" class="block text-gray-700 text-sm font-medium mb-2">Estimated Financial Impact of this Goal ($AUD):</label>
+                        <input type="number" id="goalFinancialImpact" name="goalFinancialImpact" min="0" step="0.01" placeholder="500000.00" class="focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="form-actions flex justify-between mt-6">
+                        <button type="button" class="prev-btn bg-gray-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-700 transition duration-300" onclick="prevSection('nextGoalSection')">Previous</button>
+                        <button type="submit" class="submit-btn bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Submit Application</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        // Get all main section elements
+        const sections = document.querySelectorAll('.section');
+        let currentSectionIndex = 0; // Keep track of the currently active main section
+
+        /**
+         * Displays a specific main section and hides all others.
+         * Updates the arrow icon for the active section.
+         * @param {number} index - The index of the main section to show.
+         */
+        function showSection(index) {
+            sections.forEach((section, i) => {
+                const content = section.querySelector('.section-content');
+                const arrow = section.querySelector('.arrow');
+
+                if (i === index) {
+                    content.classList.remove('hidden');
+                    content.classList.add('active');
+                    if (arrow) {
+                        arrow.classList.remove('down');
+                        arrow.classList.add('up');
+                    }
+                } else {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                    if (arrow) {
+                        arrow.classList.remove('up');
+                        arrow.classList.add('down');
+                    }
+                }
+            });
+            currentSectionIndex = index;
+        }
+
+        /**
+         * Toggles the visibility of a specific main section when its header is clicked.
+         * Closes other open sections when a new one is opened.
+         * @param {string} sectionId - The ID of the main section to toggle.
+         */
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const content = section.querySelector('.section-content');
+            const arrow = section.querySelector('.arrow');
+
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                content.classList.add('hidden');
+                if (arrow) {
+                    arrow.classList.remove('up');
+                    arrow.classList.add('down');
+                }
+            } else {
+                sections.forEach(s => {
+                    const sContent = s.querySelector('.section-content');
+                    const sArrow = s.querySelector('.arrow');
+                    if (s !== section && sContent.classList.contains('active')) {
+                        sContent.classList.remove('active');
+                        sContent.classList.add('hidden');
+                        if (sArrow) {
+                            sArrow.classList.remove('up');
+                            sArrow.classList.add('down');
+                        }
+                    }
+                });
+                content.classList.add('active');
+                content.classList.remove('hidden');
+                if (arrow) {
+                    arrow.classList.remove('down');
+                    arrow.classList.add('up');
+                }
+                currentSectionIndex = Array.from(sections).indexOf(section);
+            }
+        }
+
+        /**
+         * Navigates to the next main section in the form.
+         * @param {string} currentSectionId - The ID of the current main section.
+         */
+        function nextSection(currentSectionId) {
+            const currentSection = document.getElementById(currentSectionId);
+            const currentIndex = Array.from(sections).indexOf(currentSection);
+
+            if (currentIndex < sections.length - 1) {
+                showSection(currentIndex + 1);
+            }
+        }
+
+        /**
+         * Navigates to the previous main section in the form.
+         * @param {string} currentSectionId - The ID of the current main section.
+         */
+        function prevSection(currentSectionId) {
+            const currentSection = document.getElementById(currentSectionId);
+            const currentIndex = Array.from(sections).indexOf(currentSection);
+
+            if (currentIndex > 0) {
+                showSection(currentIndex - 1);
+            }
+        }
+
+        /**
+         * Handles the change in Marital Status dropdown.
+         * Shows/hides the second applicant's information container.
+         * @param {string} dropdownId - The ID of the marital status dropdown.
+         * @param {string} targetContainerId - The ID of the container to show/hide.
+         */
+        function handleMaritalStatusChange(dropdownId, targetContainerId) {
+            const dropdown = document.getElementById(dropdownId);
+            const container = document.getElementById(targetContainerId);
+            if (dropdown.value === 'married' || dropdown.value === 'de_facto') {
+                container.classList.remove('hidden');
+                // Make all inputs within the second applicant container required if shown
+                container.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.required = true;
+                });
+            } else {
+                container.classList.add('hidden');
+                // Make all inputs within the second applicant container not required if hidden
+                container.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.required = false;
+                    // Optionally clear values when hidden
+                    if (input.type === 'radio') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+                // Also hide any nested dynamic sections (like employment/financial details)
+                container.querySelectorAll('.hidden:not(.radio-group)').forEach(el => {
+                    el.classList.add('hidden');
+                });
+            }
+        }
+
+        /**
+         * Handles the change in Employment Type (PAYG/ABN) radio buttons.
+         * Shows/hides the relevant employment details section.
+         * @param {string} namePrefix - The name prefix for the radio buttons (e.g., 'applicant1_employmentType').
+         * @param {string} paygDetailsId - The ID of the PAYG details container.
+         * @param {string} abnDetailsId - The ID of the ABN details container.
+         */
+        function handleEmploymentTypeChange(namePrefix, paygDetailsId, abnDetailsId) {
+            const paygDetails = document.getElementById(paygDetailsId);
+            const abnDetails = document.getElementById(abnDetailsId);
+            const selectedType = document.querySelector(`input[name="${namePrefix}"]:checked`)?.value;
+
+            // Clear values in both sections before showing one
+            [paygDetails, abnDetails].forEach(section => {
+                section.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.value = '';
+                    input.required = false; // Set required to false when hidden
+                });
+            });
+
+            if (selectedType === 'PAYG') {
+                paygDetails.classList.remove('hidden');
+                abnDetails.classList.add('hidden');
+                paygDetails.querySelectorAll('input, select, textarea').forEach(input => input.required = true);
+            } else if (selectedType === 'ABN') {
+                abnDetails.classList.remove('hidden');
+                paygDetails.classList.add('hidden');
+                abnDetails.querySelectorAll('input, select, textarea').forEach(input => input.required = true);
+            } else {
+                paygDetails.classList.add('hidden');
+                abnDetails.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Toggles the visibility of financial details (credit card, home loan, personal loan).
+         * Clears input values if the section is hidden.
+         * @param {string} detailsContainerId - The ID of the details container (e.g., 'applicant1_creditCardDetails').
+         * @param {boolean} show - True to show, false to hide.
+         */
+        function toggleFinancialDetails(detailsContainerId, show) {
+            const container = document.getElementById(detailsContainerId);
+            if (show) {
+                container.classList.remove('hidden');
+                container.querySelectorAll('input, select, textarea').forEach(input => input.required = true);
+            } else {
+                container.classList.add('hidden');
+                // Clear values and remove required attribute when hidden
+                container.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.value = '';
+                    input.required = false;
+                });
+            }
+        }
+
+        // Initialize the form by showing the first section when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection(0);
+            // Ensure initial state of dynamic sections is correct
+            handleMaritalStatusChange('applicant1_maritalStatus', 'applicant2InfoContainer');
+            handleEmploymentTypeChange('applicant1_employmentType', 'applicant1_paygDetails', 'applicant1_abnDetails');
+            // For applicant 2 employment type
+            const applicant2EmploymentRadios = document.querySelectorAll('input[name="applicant2_employmentType"]');
+            applicant2EmploymentRadios.forEach(radio => {
+                radio.addEventListener('change', () => handleEmploymentTypeChange('applicant2_employmentType', 'applicant2_paygDetails', 'applicant2_abnDetails'));
+            });
+
+            // Initialize financial details for applicant 1
+            document.querySelectorAll('input[name="applicant1_hasCreditCard"]').forEach(radio => radio.addEventListener('change', () => toggleFinancialDetails('applicant1_creditCardDetails', radio.value === 'yes')));
+            document.querySelectorAll('input[name="applicant1_hasHomeLoan"]').forEach(radio => radio.addEventListener('change', () => toggleFinancialDetails('applicant1_homeLoanDetails', radio.value === 'yes')));
+            document.querySelectorAll('input[name="applicant1_hasPersonalLoan"]').forEach(radio => radio.addEventListener('change', () => toggleFinancialDetails('applicant1_personalLoanDetails', radio.value === 'yes')));
+
+            // Initialize financial details for applicant 2
+            document.querySelectorAll('input[name="applicant2_hasCreditCard"]').forEach(radio => radio.addEventListener('change', () => toggleFinancialDetails('applicant2_creditCardDetails', radio.value === 'yes')));
+            document.querySelectorAll('input[name="applicant2_hasHomeLoan"]').forEach(radio => radio.addEventListener('change', () => toggleFinancialDetails('applicant2_homeLoanDetails', radio.value === 'yes')));
+            document.querySelectorAll('input[name="applicant2_hasPersonalLoan"]').forEach(radio => radio.addEventListener('change', () => toggleFinancialDetails('applicant2_personalLoanDetails', radio.value === 'yes')));
+        });
+
+
+        // Event listener for the form submission
+        document.getElementById('multiSectionForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default browser form submission
+
+            // Create a FormData object from the form
+            const formData = new FormData(this);
+            const data = {};
+
+            // Iterate over the form data and populate a plain JavaScript object
+            // Filter out empty values for hidden fields
+            for (let [key, value] of formData.entries()) {
+                // Only include values if the input is visible or if it's a radio button that was checked
+                const inputElement = document.querySelector(`[name="${key}"][value="${value}"]`) || document.querySelector(`[name="${key}"]`);
+                if (inputElement) {
+                    let isVisible = true;
+                    let parent = inputElement.parentElement;
+                    while (parent && parent !== this) { // Check up the DOM tree
+                        if (parent.classList.contains('hidden')) {
+                            isVisible = false;
+                            break;
+                        }
+                        parent = parent.parentElement;
+                    }
+                    if (isVisible) {
+                        data[key] = value;
+                    }
+                }
+            }
+
+            // Log the collected data to the console for demonstration
+            console.log("Form Submitted!", data);
+
+            // Display a message to the user (instead of alert)
+            const formContainer = document.querySelector('.form-container');
+            let successMessage = document.getElementById('submissionMessage');
+            if (!successMessage) {
+                successMessage = document.createElement('div');
+                successMessage.id = 'submissionMessage';
+                formContainer.appendChild(successMessage);
+            }
+            successMessage.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-6';
+            successMessage.setAttribute('role', 'alert');
+            successMessage.innerHTML = `
+                <strong class="font-bold">Success!</strong>
+                <span class="block sm:inline">Form data logged to console. In a real app, this would be sent to a server.</span>
+                <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" onclick="this.parentElement.remove()">
+                    <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+                </span>
+            `;
+            // Scroll to the message
+            successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Example of how you would send data to a server using fetch API:
+            /*
+            fetch('/your-server-endpoint', { // Replace with your actual server endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('Success:', result);
+                // Display success message to user
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Display error message to user
+            });
+            */
+        });
+    </script>
+
+</body>
+</html>
